@@ -336,14 +336,9 @@ async def on_message(message):
                 return
 
             pass
-
-
-            
-
-
             
         #await message.channel.send("Howdy")
 
 
 
-client.run("OTM5NjgwNDUyMzI1ODM0Nzgy.Yf8Xng.fNs0LxnX2XBJq7DrcKQWhNt2aCA")
+client.run("OTM5NjgwNDUyMzI1ODM0Nzgy. Yf8Xng.0Bc-Wo2jKHCxcHwsrKzdYxtAnP0")
