@@ -1,4 +1,5 @@
 import random
+import main
 
 class Game:
     host = None
@@ -30,7 +31,7 @@ class Game:
             for i in range(len(self.players)):
                 new_role = self.roles[i]
                 if new_role == "s":
-                    self.players[i].title = "<><> random role <><>"
+                    self.players[i].title = main.roles_list[random.randint(0, len(main.roles_list))]
                 self.players[i].set_role(new_role)
             return
         if cmd == 2:

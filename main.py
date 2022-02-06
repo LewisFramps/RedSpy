@@ -342,7 +342,7 @@ async def on_message(message):
                 starting_game.gm = players[0]
                 await starting_game.gm.acc.send("You're the game master, to go to the next question enter anything into the guild chat!")
                 starting_game.questionlist = players + [players[0]]
-                await message.channel.send((str(starting_game.questionlist[0].acc) + " you're first! Ask " + str(starting_game.questionlist[1].acc) + " a question! If they're a spy, they don't know their title. Try and find that spy!"))
+                await message.channel.send((str(starting_game.questionlist[0].name) + " you're first! Ask " + str(starting_game.questionlist[1].name) + " a question! If they're a spy, they don't know their title. Try and find that spy!"))
                 starting_game.send_command(2)
                 return
 
