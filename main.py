@@ -9,11 +9,8 @@ start = "!and"
 help_message = "ratio + cringe + take the l + you needed the help message lol"
 already_in_game_message = "You're already in a game! Use \"!and leave\" to leave your current lobby!"
 error_message = "Your input is wrong! Try using \"!and help\""
-<<<<<<< Updated upstream
 get_details_message = "There's a spy our midst! We need to confirm your identity before we can crack this case! Enter your title and your name - in two seperate messages!"
-=======
 get_details_message = "There's a spy our midst! We need to confirm your identity before we can crack this case! Enter your real name and then enter your code name!"
->>>>>>> Stashed changes
 code_in_use = "That lobby code is already in use! Try another!"
 game_in_progress = "This lobby has already started"
 game_does_not_exist = "This lobby doesn't exist!"
