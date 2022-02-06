@@ -42,8 +42,6 @@ class Game:
         if cmd == 2:
             self.state = 2
 
-
-
     def get_code(self):
         return self.code
 

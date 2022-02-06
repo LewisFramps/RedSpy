@@ -22,8 +22,6 @@ waiting_room = []
 in_game = []
 
 
-
-
 def parse_message(message):
     """"
     ### Help Command ###
