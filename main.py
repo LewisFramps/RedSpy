@@ -6,7 +6,7 @@ import random
 
 # Constant message strings
 start = "!and"
-help_message = "ratio + cringe + take the l + you needed the help message lol"
+help_message = "HELP MENU PAGE 1 (of 1):\n\n\nCommands\n\n!and help := you are here\n!and gather <password> := create a game room\n!and join <password> := join a game room\n!and start := start the game"
 already_in_game_message = "You're already in a game! Use \"!and leave\" to leave your current lobby!"
 error_message = "Your input is wrong! Try using \"!and help\""
 get_details_message = "There's a spy our midst! We need to confirm your identity before we can crack this case! Enter your title and your name - in two seperate messages!"
