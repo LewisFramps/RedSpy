@@ -9,7 +9,7 @@ start = "!and"
 help_message = "HELP MENU PAGE 1 (of 1):\n\nCommands\n\n!and help\t := you are here\n!and gather <password>\t := create a game room\n!and join <password>\t := join a game room\n!and start\t := start the game"
 already_in_game_message = "You're already in a game! Use \"!and leave\" to leave your current lobby!"
 error_message = "Your input is wrong! Try using \"!and help\""
-get_details_message = "There's a spy in our midst! We need to confirm your identity before we can crack this case! Enter your title and your name - in two seperate messages!"
+get_details_message = "There's a spy our midst! We need to confirm your identity before we can crack this case! Enter your title and your name - in two seperate messages!"
 code_in_use = "That lobby code is already in use! Try another!"
 game_in_progress = "This lobby has already started"
 game_does_not_exist = "This lobby doesn't exist!"
@@ -156,8 +156,6 @@ def waiting_for(p):
             return i[1]
     return None
 
-
-
 @client.event
 async def on_message(message):
     auth = message.author
@@ -170,6 +168,8 @@ async def on_message(message):
                     print(g.votes)
                     p.voted = True
                     if len(g.votes) == len(g.players):
+                        for q in g.players:
+                            q.voted = False
                         g.state = 4
                         await message.channel.send(g.votes)
                         votes = [0] * len(g.players)
@@ -178,7 +178,20 @@ async def on_message(message):
                         max_votes = max(votes)
                         if votes.count(max_votes) > 1:
                             g.state = 2
-                            await message.channel.send("It's a tie! The has cause too much confusion, they win!")
+                            await message.channel.send("It's a tie! No one goes out this round!")
+                            players = g.players
+                            random.shuffle(players)
+                            g.gm = players[0]
+                            await g.gm.acc.send(
+                                "You're the game master, to go to the next question enter anything into the server chat!")
+                            g.questionlist = players + [players[0]]
+                            random.shuffle(g.questionlist)
+                            await message.channel.send(
+                                str(g.questionlist[0].name) + " you're first! Ask " + str(
+                                    g.questionlist[
+                                        1].name) + " a question! If they're a spy, they don't know their title. Try and find that spy!")
+                            g.send_command(2)
+                            g.votes = []
                             return
                         else:
                             choice = votes.index(max_votes)
@@ -198,7 +211,6 @@ async def on_message(message):
                                 else:
                                     g.state = 2
                                     players = g.players
-                                    g.votes = [None] * g.players
                                     random.shuffle(players)
                                     g.gm = players[0]
                                     await g.gm.acc.send(
@@ -211,6 +223,8 @@ async def on_message(message):
                                                 1].name) + " a question! If they're a spy, they don't know their title. Try and find that spy!")
                                     g.send_command(2)
                                     return
+
+
                             else:
                                 await message.channel.send("You caught the AndSpy!")
                                 del g
@@ -282,7 +296,7 @@ async def on_message(message):
             return
 
         elif case == 0:
-            await message.channel.send("Instructions = “So you want to play AND Spy? Here’s what you need to know!\n\nAND Spy! Is a turn-based Mafia-style game. Once a lobby has been created and players join (for command support try !and help), you will receive a message from the bot asking for an AND TITLE and NAME. Send these in two separate messages. From there, you will be sent a role - innocent or spy - and a list of all the players roles with the exception of the spy who will not know their own role. Questioning will then begin, with every player having the opportunity to ask and answer a question. Once everyone has been asked, they will then have the chance to vote off the player they feel is most suspicious! If the spy manages to make it to the end of the game with only one innocent left, they win. If the innocents vote out the spy, they win! If there's a tie, the spy has caused too much confusion and wins in the chaos! Good luck and have fun!NEW")
+            await message.channel.send("Instructions = “So you want to play AND Spy? Here’s what you need to know!\n\nAND Spy! Is a turn-based Mafia-style game. Once a lobby has been created and players join (for command support try !and help), you will receive a message from the bot asking for an AND TITLE and NAME. Send these in two separate messages. From there, you will be sent a role - innocent or spy - and a list of all the players roles with the exception of the spy who will not know their own role. Questioning will then begin, with every player having the opportunity to ask and answer a question. Once everyone has been asked, they will then have the chance to vote off the player they feel is most suspicious! If the spy manages to make it to the end of the game with only one innocent left, they win. If the innocents vote out the spy, they win! Good luck and have fun!")
 
         # help case
         elif case == 1:
@@ -432,4 +446,4 @@ async def on_message(message):
                 return
             pass
         # await message.channel.send("Howdy")
-client.run("OTM5NjgwNDUyMzI1ODM0Nzgy.Yf8Xng.0Bc-Wo2jKHCxcHwsrKzdYxtAnP0")
+client.run("OTM5NjgwNDUyMzI1ODM0Nzgy.Yf8Xng.MvYF6qjVMWhi_wWhultrsJQ1ALU")
