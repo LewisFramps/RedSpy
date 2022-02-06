@@ -329,7 +329,7 @@ async def on_message(message):
                             s += str(person.name) + "\t:" + str(person.title) + "\n"
                         await acc.send(s)
                     if pl.role == "s":
-                        await acc.send("You're a spy! Keep hidden! You don't know your disguise, you gotta bluff through this!")
+                        await acc.send("You're a spy! Don't get caught - you don't know your title but everyone else does!\nBluff your way to victory by outsmarting the others!")
                         s = ""
                         for person in starting_game.players:
                             if person.role == "s":
