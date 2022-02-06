@@ -1,5 +1,8 @@
 import random
-import main
+currfile = open("roles.txt", "r")
+roles_str = currfile.read()
+roles_list = roles_str.split(", ")
+currfile.close()
 
 class Game:
     host = None
@@ -31,7 +34,9 @@ class Game:
             for i in range(len(self.players)):
                 new_role = self.roles[i]
                 if new_role == "s":
-                    self.players[i].title = main.roles_list[random.randint(0, len(main.roles_list))]
+                    shuffled_roles = roles_list
+                    random.shuffle(roles_list)
+                    self.players[i].title = shuffled_roles[0]
                 self.players[i].set_role(new_role)
             return
         if cmd == 2:
