@@ -4,6 +4,7 @@ class Player:
     name = None
     title = None
     current_game = None
+    voted = False
 
     def __init__(self, acc, name, title, current_game):
         self.acc = acc

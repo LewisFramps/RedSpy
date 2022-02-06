@@ -9,6 +9,7 @@ class Game:
     players = []
     roles = ['I', 'S']
     questionlist = []
+    votes = []
     code = ""
     state = 0
     gm = None
@@ -25,6 +26,7 @@ class Game:
         spy_titles = ["Cringe", "Spy", "lmao"]
         if cmd == 1:
             self.state = 1
+            votes = [None] * len(self.players)
             # give out roles
             self.roles = ["i"] * (len(self.players) - 1)
             self.roles += ["s"]
@@ -36,11 +38,12 @@ class Game:
                 if new_role == "s":
                     shuffled_roles = roles_list
                     random.shuffle(roles_list)
-                    self.players[i].title = shuffled_roles[0]
+                    self.players[i].title = shuffled_roles[0].lower()
                 self.players[i].set_role(new_role)
             return
         if cmd == 2:
             self.state = 2
+
 
     def get_code(self):
         return self.code

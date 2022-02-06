@@ -6,17 +6,17 @@ import random
 
 # Constant message strings
 start = "!and"
-help_message = "HELP MENU PAGE 1 (of 1):\n\n\nCommands\n\n!and help := you are here\n!and gather <password> := create a game room\n!and join <password> := join a game room\n!and start := start the game"
+help_message = "HELP MENU PAGE 1 (of 1):\n\nCommands\n\n!and help\t := you are here\n!and gather <password>\t := create a game room\n!and join <password>\t := join a game room\n!and start\t := start the game"
 already_in_game_message = "You're already in a game! Use \"!and leave\" to leave your current lobby!"
 error_message = "Your input is wrong! Try using \"!and help\""
-get_details_message = "There's a spy our midst! We need to confirm your identity before we can crack this case! Enter your title and your name - in two seperate messages!"
+get_details_message = "There's a spy in our midst! We need to confirm your identity before we can crack this case! Enter your title and your name - in two seperate messages!"
 code_in_use = "That lobby code is already in use! Try another!"
 game_in_progress = "This lobby has already started"
 game_does_not_exist = "This lobby doesn't exist!"
 left_lobby = "You left your lobby."
 not_in_lobby = "You aren't in a lobby."
 not_enough_players = "Not enough players, games must have a minimum of 3 players to start"
-
+alphabet = 'abcdefghijklmnopqrstuvwxyz'
 games = []
 waiting_room = []
 in_game = []
@@ -25,22 +25,22 @@ in_game = []
 def parse_message(message):
     """"
     ### Help Command ###
-    !and                   := help
-    !and help              := help
+    !red                   := help
+    !red help              := help
 
     ### Lobby Commands ###
-    !and gather `str`      := gather
-    !and join `str`        := join
-    !and lobby `str`       := print lobby
-    !and leave             := leave
-    !and start             := start
-    !and status            := status
+    !red gather `str`      := gather
+    !red join `str`        := join
+    !red lobby `str`       := print lobby
+    !red leave             := leave
+    !red start             := start
+    !red status            := status
 
     ### Voting command ###
-    !and vote `name`
+    !red vote `name`
 
     -3    := debug
-    -2    := !and followed by error
+    -2    := !red followed by error
     -1    := Not valid input
     1     := Help
     2     := gather
@@ -56,38 +56,41 @@ def parse_message(message):
     if s[0] != start:
         return -1
 
-    # ### Help CommANDs ###
+    # ### Help Commands ###
 
-    # !and
+    # !red
     if len(s) == 1:
         return 1
-    # !and help
+    # !red help
     elif s[1] == "help":
         return 1
 
     elif s[1] == "debug":
         return -3
-    # ### Lobby CommANDs ###
+    # ### Lobby Commands ###
 
-    # !and gather `str`
+    elif s[1] == "instructions" and len(s) == 2:
+        return 0
+
+    # !red gather `str`
     elif s[1] == "gather" and len(s) == 3:
         if s[2] != "":
             return 2
         return -1
 
-    # !and join `str` `str`
+    # !red join `str` `str`
     elif s[1] == "join" and len(s) == 3:
         if s[1] != "":
             return 3
         return -1
 
-    # !and lobby `str`
+    # !red lobby `str`
     elif s[1] == "lobby" and len(s) == 3:
         if s[1] != "":
             return 4
         return -1
 
-    # !and leave
+    # !red leave
     elif s[1] == "leave" and len(s) == 2:
         return 5
     elif s[1] == "start" and len(s) == 2:
@@ -154,9 +157,86 @@ def waiting_for(p):
     return None
 
 
+
 @client.event
 async def on_message(message):
     auth = message.author
+    for g in games:
+        if g.state == 3 and message.guild is not None:
+            for p in g.players:
+                if auth == p.acc and not p.voted and message.content in alphabet[0:len(g.players)]:
+                    print(message.content)
+                    g.votes.append(message.content)
+                    print(g.votes)
+                    p.voted = True
+                    if len(g.votes) == len(g.players):
+                        g.state = 4
+                        await message.channel.send(g.votes)
+                        votes = [0] * len(g.players)
+                        for i in range(len(g.players)):
+                            votes[alphabet.index(g.votes[i])] += 1
+                        max_votes = max(votes)
+                        if votes.count(max_votes) > 1:
+                            g.state = 2
+                            await message.channel.send("It's a tie! The has cause too much confusion, they win!")
+                            return
+                        else:
+                            choice = votes.index(max_votes)
+                            g.votes = []
+                            await message.channel.send(g.players[choice].name + " has been voted off!")
+                            if(g.players[choice].role == "i"):
+                                await message.channel.send("They were innocent!")
+                                del g.players[choice]
+                                if len(g.players) == 2:
+                                    await message.channel.send("The spy wins!")
+                                    g.players = []
+                                    g.code = ""
+                                    g.host = None
+                                    g.state = 0
+                                    g.gm = None
+                                    return
+                                else:
+                                    g.state = 2
+                                    players = g.players
+                                    g.votes = [None] * g.players
+                                    random.shuffle(players)
+                                    g.gm = players[0]
+                                    await g.gm.acc.send(
+                                        "You're the game master, to go to the next question enter anything into the server chat!")
+                                    g.questionlist = players + [players[0]]
+                                    random.shuffle(g.questionlist)
+                                    await message.channel.send(
+                                        str(g.questionlist[0].name) + " you're first! Ask " + str(
+                                            g.questionlist[
+                                                1].name) + " a question! If they're a spy, they don't know their title. Try and find that spy!")
+                                    g.send_command(2)
+                                    return
+                            else:
+                                await message.channel.send("You caught the AndSpy!")
+                                del g
+                                return
+
+                        return
+            return
+        print("We got here")
+        print(g.gm)
+        if g.gm is not None:
+            if auth == g.gm.acc and message.guild is not None:
+                print("and got here")
+                if len(g.questionlist) == 2:
+                    await message.channel.send("Who do you think the spy is? Vote now!\n")
+                    g.state = 3
+                    s = ""
+                    for i in range(len(g.players)):
+                        s += alphabet[i] + "\t" + g.players[i].name + "\n"
+                    await message.channel.send(s)
+                    return
+                g.questionlist.pop(0)
+                await message.channel.send((str(g.questionlist[0].name) + " you're up! Ask " + str(
+                    g.questionlist[
+                        1].name) + " a question! If they're a spy, they don't know their title. Try and find that spy!"))
+                return
+
     if message.author == client.user:  # if bot sent message...
         return  # ...don't read
 
@@ -168,7 +248,7 @@ async def on_message(message):
         if message.guild is None:
             if waiting_for(auth):
                 for i in waiting_room:
-                    if i[0][0] == auth:  # if i is waitng & messaged andSpy
+                    if i[0][0] == auth:  # if i is waitng & messaged RedSpy
                         print(":)")
                         if i[0][1] == None:
                             waiting_room.remove(i)
@@ -180,7 +260,7 @@ async def on_message(message):
                             name = i[0][0]
                             title = i[0][1]
                             code = i[1]
-                            new_player = Player(auth, name, title, code)
+                            new_player = Player(auth, message.content, title, code)
                             get_game(code).add_player(new_player)
                             await message.channel.send(str(name) + " has joined lobby: " + str(code))
                             return
@@ -201,6 +281,9 @@ async def on_message(message):
         elif case == -1:
             return
 
+        elif case == 0:
+            await message.channel.send("Instructions = “So you want to play AND Spy? Here’s what you need to know!\n\nAND Spy! Is a turn-based Mafia-style game. Once a lobby has been created and players join (for command support try !and help), you will receive a message from the bot asking for an AND TITLE and NAME. Send these in two separate messages. From there, you will be sent a role - innocent or spy - and a list of all the players roles with the exception of the spy who will not know their own role. Questioning will then begin, with every player having the opportunity to ask and answer a question. Once everyone has been asked, they will then have the chance to vote off the player they feel is most suspicious! If the spy manages to make it to the end of the game with only one innocent left, they win. If the innocents vote out the spy, they win! If there's a tie, the spy has caused too much confusion and wins in the chaos! Good luck and have fun!NEW")
+
         # help case
         elif case == 1:
             await message.channel.send(help_message)
@@ -210,6 +293,8 @@ async def on_message(message):
         elif case == 2:
             new_player = message.author
             # if player is already in a game, they can't make a new one
+            print("in_game:", in_game(new_player))
+            print("waiting:", waiting(new_player))
             if in_game(new_player) or waiting(new_player):
                 await message.channel.send(already_in_game_message)
                 return
@@ -268,7 +353,6 @@ async def on_message(message):
             else:
                 await message.channel.send("Lobby doesn't exist!")  #
                 return
-
                 # leave case
         elif case == 5:
             new_player = message.author
@@ -276,10 +360,6 @@ async def on_message(message):
             left = False
             code = None
             for i in range(len(waiting_room)):
-                print(waiting_room)
-                print(waiting_room[i])
-                print(waiting_room[i][0])
-                print(waiting_room[i][0][0])
                 if waiting_room[i][0][0] == new_player:
                     code = waiting_room[i][1]
                     print("Found IT")
@@ -297,7 +377,6 @@ async def on_message(message):
             else:
                 await message.channel.send(not_in_lobby)
                 return
-
                 # Start case
         # WRONG NOW VERY WRONG FUCK SAKE
         elif case == 6:
@@ -335,7 +414,7 @@ async def on_message(message):
                         s = ""
                         for person in starting_game.players:
                             if person.role == "s":
-                                s += "You don't know your title so get ready to bluff! Don't get caught!\n"
+                                s += str(person.name) + "\t:" + "SPY - Title UNKNOWN\n"
                             else:
                                 s += str(person.name) + "\t:" + str(person.title) + "\n"
                         await acc.send(s)
@@ -345,15 +424,12 @@ async def on_message(message):
                 await starting_game.gm.acc.send(
                     "You're the game master, to go to the next question enter anything into the server chat!")
                 starting_game.questionlist = players + [players[0]]
-                await message.channel.send((str(starting_game.questionlist[0].name) + " you're first! Ask " + str(
+                print(starting_game.questionlist)
+                await message.channel.send(str(starting_game.questionlist[0].name) + " you're first! Ask " + str(
                     starting_game.questionlist[
-                        1].name) + " a question! If they're a spy, they don't know their title. Try and find that spy!"))
+                        1].name) + " a question! If they're a spy, they don't know their title. Try and find that spy!")
                 starting_game.send_command(2)
                 return
-
             pass
-
         # await message.channel.send("Howdy")
-
-
-client.run("OTM5NjgwNDUyMzI1ODM0Nzgy. Yf8Xng.0Bc-Wo2jKHCxcHwsrKzdYxtAnP0")
+client.run("OTM5NjgwNDUyMzI1ODM0Nzgy.Yf8Xng.0Bc-Wo2jKHCxcHwsrKzdYxtAnP0")
