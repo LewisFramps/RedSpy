@@ -9,7 +9,11 @@ start = "!and"
 help_message = "ratio + cringe + take the l + you needed the help message lol"
 already_in_game_message = "You're already in a game! Use \"!and leave\" to leave your current lobby!"
 error_message = "Your input is wrong! Try using \"!and help\""
+<<<<<<< Updated upstream
 get_details_message = "There's a spy our midst! We need to confirm your identity before we can crack this case! Enter your title and your name - in two seperate messages!"
+=======
+get_details_message = "There's a spy our midst! We need to confirm your identity before we can crack this case! Enter your real name and then enter your code name!"
+>>>>>>> Stashed changes
 code_in_use = "That lobby code is already in use! Try another!"
 game_in_progress = "This lobby has already started"
 game_does_not_exist = "This lobby doesn't exist!"
@@ -25,22 +29,22 @@ in_game = []
 def parse_message(message):
     """"
     ### Help Command ###
-    !red                   := help
-    !red help              := help
+    !and                   := help
+    !and help              := help
 
     ### Lobby Commands ###
-    !red gather `str`      := gather 
-    !red join `str`        := join
-    !red lobby `str`       := print lobby
-    !red leave             := leave
-    !red start             := start
-    !red status            := status
+    !and gather `str`      := gather 
+    !and join `str`        := join
+    !and lobby `str`       := print lobby
+    !and leave             := leave
+    !and start             := start
+    !and status            := status
     
     ### Voting command ###
-    !red vote `name`
+    !and vote `name`
 
     -3    := debug
-    -2    := !red followed by error
+    -2    := !and followed by error
     -1    := Not valid input
     1     := Help
     2     := gather
@@ -58,10 +62,10 @@ def parse_message(message):
 
     # ### Help Commands ###
 
-    # !red
+    # !and
     if len(s) == 1:
         return 1
-    # !red help
+    # !and help
     elif s[1] == "help":
         return 1
 
@@ -69,25 +73,25 @@ def parse_message(message):
         return -3
     # ### Lobby Commands ###
 
-    # !red gather `str`
+    # !and gather `str`
     elif s[1] == "gather" and len(s) == 3:
         if s[2] != "":
             return 2
         return -1
 
-    # !red join `str` `str`
+    # !and join `str` `str`
     elif s[1] == "join" and len(s) == 3:
         if s[1] != "":
             return 3
         return -1
 
-    # !red lobby `str`
+    # !and lobby `str`
     elif s[1] == "lobby" and len(s) == 3:
         if s[1] != "":
             return 4
         return -1
 
-    #!red leave
+    #!and leave
     elif s[1] == "leave" and len(s) == 2:
         return 5
     elif s[1] == "start" and len(s) == 2:
@@ -163,7 +167,7 @@ async def on_message(message):
         if message.guild is None:
             if waiting_for(auth):
                 for i in waiting_room:
-                    if i[0][0] == auth:        # if i is waitng & messaged RedSpy
+                    if i[0][0] == auth:        # if i is waitng & messaged andSpy
                         print(":)")
                         if i[0][1] == None:
                             waiting_room.remove(i)
