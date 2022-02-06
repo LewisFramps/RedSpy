@@ -326,18 +326,18 @@ async def on_message(message):
                     title = pl.title
                     acc = pl.acc
                     if pl.role == "i":
-                        await acc.send("You're innocent! Find that spy! Your title is: " + title + "\n")
+                        await acc.send("You're innocent! Your job is to weed out the spy in your midst! Your title is: " + title + "\n")
                         s = ""
                         for person in starting_game.players:
                             s += str(person.name) + "\t:" + str(person.title) + "\n"
                         await acc.send(s)
                     if pl.role == "s":
                         await acc.send(
-                            "You're a spy! Keep hidden! You don't know your disguise, you gotta bluff through this!")
+                            "You're a spy! You don't know your title, so bluff your way through questions and try not get caught!")
                         s = ""
                         for person in starting_game.players:
                             if person.role == "s":
-                                s += "This is you, you' don't know your disguise! You gotta bluff!\n"
+                                s += "You don't know your title so get ready to bluff! Don't get caught!\n"
                             else:
                                 s += str(person.name) + "\t:" + str(person.title) + "\n"
                         await acc.send(s)
@@ -345,7 +345,7 @@ async def on_message(message):
                 random.shuffle(players)
                 starting_game.gm = players[0]
                 await starting_game.gm.acc.send(
-                    "You're the game master, to go to the next question enter anything into the chat!")
+                    "You're the game master, to go to the next question enter anything into the server chat!")
                 starting_game.questionlist = players + [players[0]]
                 await message.channel.send((str(starting_game.questionlist[0].name) + " you're first! Ask " + str(
                     starting_game.questionlist[
