@@ -2,13 +2,14 @@ import discord
 import os
 from game import Game
 from player import Player
+import random
 
 # Constant message strings
-start = "!red"
+start = "!and"
 help_message = "ratio + cringe + take the l + you needed the help message lol"
-already_in_game_message = "You're already in a game! Use \"!red leave\" to leave your current lobby!"
-error_message = "Your input is wrong! Try using \"!red help\""
-get_details_message = "There's a spy our midst! We need to confirm your identity before we can crack this case! Enter your real name and then enter your code name!"
+already_in_game_message = "You're already in a game! Use \"!and leave\" to leave your current lobby!"
+error_message = "Your input is wrong! Try using \"!and help\""
+get_details_message = "There's a spy our midst! We need to confirm your identity before we can crack this case! Enter your title and your name - in two seperate messages!"
 code_in_use = "That lobby code is already in use! Try another!"
 game_in_progress = "This lobby has already started"
 game_does_not_exist = "This lobby doesn't exist!"
@@ -20,11 +21,6 @@ not_enough_players = "Not enough players, games must have a minimum of 3 players
 games = []
 waiting_room = []
 in_game = []
-
-sample_roles = open("roles.txt", "r")
-and_titles_str = sample_roles.read()
-and_titles_list = and_titles_str.split(", ")
-sample_roles.close()
 
 def parse_message(message):
     """"
@@ -316,7 +312,23 @@ async def on_message(message):
                 return
             else:
                 await message.channel.send("Starting game!")
+                starting_game.send_command(1)
+                for pl in starting_game.players:
+                    role = pl.role
+                    title = pl.title
+                    acc = pl.acc
+                    if pl.role == "i":
+                        await acc.send("You're innocent! Find that spy! Your title is: " + title)
+                    if pl.role == "s":
+                        await acc.send("You're a spy! Keep hidden! Your disguise is: " + "TRAITOR TEST MESSAGE")
+                players = starting_game.players
+                random.shuffle(players)
+                starting_game.gm = players[0]
+                await starting_game.gm.acc.send("You're the game master, to go to the next question enter anything into the chat!")
+                starting_game.questionlist = players + [players[0]]
+                await message.channel.send((str(starting_game.questionlist[0].name) + " you're first! Ask " + str(starting_game.questionlist[1].name) + " a question! If they're a spy, they don't know their title. Try and find that spy!"))
                 return
+
             pass
 
 
@@ -328,4 +340,4 @@ async def on_message(message):
 
 
 
-client.run("OTM5NjgwNDUyMzI1ODM0Nzgy.Yf8Xng.HUqRLdyJ1evtD7VWJ5ERHCaVE1M")
+client.run("OTM5NjgwNDUyMzI1ODM0Nzgy.Yf8Xng.fNs0LxnX2XBJq7DrcKQWhNt2aCA")

@@ -1,10 +1,13 @@
+import random
 
 class Game:
     host = None
     players = []
     roles = ['I', 'S']
+    questionlist = []
     code = ""
     state = 0
+    gm = None
 
     def __init__(self, code):
         self.code = code
@@ -13,9 +16,22 @@ class Game:
         if len(self.players) == 0:
             self.host = new
         self.players.append(new)
-    
-    def get_command(self, cmd):
-        pass
+
+    def send_command(self, cmd):
+        spy_titles = ["Cringe", "Spy", "lmao"]
+        if cmd == 1:
+            # give out roles
+            self.roles = ["i"] * (len(self.players) - 1)
+            self.roles += ["s"]
+            print(self.roles)
+            random.shuffle(self.roles)
+            print(self.roles)
+            for i in range(len(self.players)):
+                new_role = self.roles[i]
+                self.players[i].set_role(new_role)
+            return
+
+
 
     def get_code(self):
         return self.code
