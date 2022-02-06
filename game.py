@@ -20,6 +20,7 @@ class Game:
     def send_command(self, cmd):
         spy_titles = ["Cringe", "Spy", "lmao"]
         if cmd == 1:
+            self.state = 1
             # give out roles
             self.roles = ["i"] * (len(self.players) - 1)
             self.roles += ["s"]
@@ -28,8 +29,12 @@ class Game:
             print(self.roles)
             for i in range(len(self.players)):
                 new_role = self.roles[i]
+                if new_role == "s":
+                    self.players[i].title = "<><> random role <><>"
                 self.players[i].set_role(new_role)
             return
+        if cmd == 2:
+            self.state = 2
 
 
 

@@ -10,7 +10,6 @@ help_message = "ratio + cringe + take the l + you needed the help message lol"
 already_in_game_message = "You're already in a game! Use \"!and leave\" to leave your current lobby!"
 error_message = "Your input is wrong! Try using \"!and help\""
 get_details_message = "There's a spy our midst! We need to confirm your identity before we can crack this case! Enter your title and your name - in two seperate messages!"
-get_details_message = "There's a spy our midst! We need to confirm your identity before we can crack this case! Enter your real name and then enter your code name!"
 code_in_use = "That lobby code is already in use! Try another!"
 game_in_progress = "This lobby has already started"
 game_does_not_exist = "This lobby doesn't exist!"
@@ -23,30 +22,25 @@ games = []
 waiting_room = []
 in_game = []
 
-currfile = open("roles.txt", "r")
-roles_str = currfile.read()
-roles_list = roles_str.split(", ")
-currfile.close()
-
 def parse_message(message):
     """"
     ### Help Command ###
-    !and                   := help
-    !and help              := help
+    !red                   := help
+    !red help              := help
 
     ### Lobby Commands ###
-    !and gather `str`      := gather 
-    !and join `str`        := join
-    !and lobby `str`       := print lobby
-    !and leave             := leave
-    !and start             := start
-    !and status            := status
+    !red gather `str`      := gather 
+    !red join `str`        := join
+    !red lobby `str`       := print lobby
+    !red leave             := leave
+    !red start             := start
+    !red status            := status
     
     ### Voting command ###
-    !and vote `name`
+    !red vote `name`
 
     -3    := debug
-    -2    := !and followed by error
+    -2    := !red followed by error
     -1    := Not valid input
     1     := Help
     2     := gather
@@ -64,10 +58,10 @@ def parse_message(message):
 
     # ### Help Commands ###
 
-    # !and
+    # !red
     if len(s) == 1:
         return 1
-    # !and help
+    # !red help
     elif s[1] == "help":
         return 1
 
@@ -75,25 +69,25 @@ def parse_message(message):
         return -3
     # ### Lobby Commands ###
 
-    # !and gather `str`
+    # !red gather `str`
     elif s[1] == "gather" and len(s) == 3:
         if s[2] != "":
             return 2
         return -1
 
-    # !and join `str` `str`
+    # !red join `str` `str`
     elif s[1] == "join" and len(s) == 3:
         if s[1] != "":
             return 3
         return -1
 
-    # !and lobby `str`
+    # !red lobby `str`
     elif s[1] == "lobby" and len(s) == 3:
         if s[1] != "":
             return 4
         return -1
 
-    #!and leave
+    #!red leave
     elif s[1] == "leave" and len(s) == 2:
         return 5
     elif s[1] == "start" and len(s) == 2:
@@ -169,7 +163,7 @@ async def on_message(message):
         if message.guild is None:
             if waiting_for(auth):
                 for i in waiting_room:
-                    if i[0][0] == auth:        # if i is waitng & messaged andSpy
+                    if i[0][0] == auth:        # if i is waitng & messaged RedSpy
                         print(":)")
                         if i[0][1] == None:
                             waiting_room.remove(i)
@@ -324,15 +318,27 @@ async def on_message(message):
                     title = pl.title
                     acc = pl.acc
                     if pl.role == "i":
-                        await acc.send("You're innocent! Find that spy! Your title is: " + title)
+                        await acc.send("You're innocent! Find that spy! Your title is: " + title + "\n")
+                        s = ""
+                        for person in starting_game.players:
+                            s += str(person.name) + "\t:" + str(person.title) + "\n"
+                        await acc.send(s)
                     if pl.role == "s":
-                        await acc.send("You're a spy! Keep hidden! Your disguise is: " + "TRAITOR TEST MESSAGE")
+                        await acc.send("You're a spy! Keep hidden! You don't know your disguise, you gotta bluff through this!")
+                        s = ""
+                        for person in starting_game.players:
+                            if person.role == "s":
+                                s += "This is you, you' don't know your disguise! You gotta bluff!"
+                            else:
+                                s += str(person.name) + "\t:" + str(person.title) + "\n"
+                        await acc.send(s)
                 players = starting_game.players
                 random.shuffle(players)
                 starting_game.gm = players[0]
                 await starting_game.gm.acc.send("You're the game master, to go to the next question enter anything into the chat!")
                 starting_game.questionlist = players + [players[0]]
                 await message.channel.send((str(starting_game.questionlist[0].name) + " you're first! Ask " + str(starting_game.questionlist[1].name) + " a question! If they're a spy, they don't know their title. Try and find that spy!"))
+                starting_game.send_command(2)
                 return
 
             pass
