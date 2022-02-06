@@ -56,7 +56,7 @@ def parse_message(message):
     if s[0] != start:
         return -1
 
-    # ### Help Commands ###
+    # ### Help CommANDs ###
 
     # !red
     if len(s) == 1:
@@ -67,7 +67,7 @@ def parse_message(message):
 
     elif s[1] == "debug":
         return -3
-    # ### Lobby Commands ###
+    # ### Lobby CommANDs ###
 
     # !red gather `str`
     elif s[1] == "gather" and len(s) == 3:
