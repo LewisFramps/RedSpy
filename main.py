@@ -21,6 +21,11 @@ games = []
 waiting_room = []
 in_game = []
 
+sample_roles = open("roles.txt", "r")
+and_titles_str = sample_roles.read()
+and_titles_list = and_titles_str.split(", ")
+sample_roles.close()
+
 def parse_message(message):
     """"
     ### Help Command ###
